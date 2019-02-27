@@ -1,0 +1,29 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 19, 2018, 9:45:40 AM
+    Author     : sdelucero
+*/
+
+/*
+.ui-widget, .ui-widget .ui-widget {
+    font-size: 90% !important;
+}
+.ui-outputlabel {
+    font-size: 90%;
+}
+*/    
+.green-button.ui-button.ui-state-default {
+    background-color: #5cb85c;
+    border-color: #5cb85c;
+    color: #fff;
+}
+
+.green-button.ui-button.ui-state-default:enabled:hover, 
+.green-button.ui-button.ui-state-default:focus {
+    background-color: #4cae4c;
+    border-color: #5cb85c;
+}            

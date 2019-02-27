@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <f:view >
+        <f:event type="preRenderView" listener="#{userSession.checkStatus}" />
+        <h:head>
+            <title><ui:insert name="pageTitle">FIA Plot Photos</ui:insert></title>
+            <f:facet name="first">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+            </f:facet>
+            <style>
+                /*
+                body {
+                    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                    font-size: 9px;
+                    line-height: 1.4285;
+                    color: #333333;
+                    background-color: #fff;
+                }
+                */
+                /*
+                .ui-state-default {
+                    background: #459e00;
+                }
+                */
+                .ui-menuitem-text{
+                    float: none !important;
+                    white-space: nowrap;
+                    display: list-item;
+                    margin-right: 2em;
+                }
+
+                .ui-menu{
+                    width: auto;
+                }            
+                .ui-datagrid-no-border, .ui-datagrid-content {
+                    border: none;
+                }	
+                .alignTop {
+                    vertical-align: top;
+                }
+                .container-fluid {padding-left: 30px; padding-right: 30px;}
+
+                .alignLeft {
+                    text-align: left;
+                }
+                .alignRight {
+                    text-align: right;
+                }
+                .alignCenter {
+                    text-align: center;
+                }
+                .pad4 {
+                    padding-right: 4 !important;
+                }
+
+            </style>
+            <script type="text/javascript">
+                function showStatus() {
+                    PF('statusDialog').show();
+                }
+
+                function hideStatus() {
+                    PF('statusDialog').hide();
+                }
+            </script>        
+
+        </h:head>
+        <h:body>
+            <b:container fluid="true"> 
+                <div style="color:#ffffff;background-color: darkgreen; padding: 5px;"><img src="resources/images/usda-white.png"/> United States Department of Agriculture</div>
+                <div style="vertical-align: middle" ><a href=""><img src="resources/images/fs.png"/></a></div>
+                <h:form id="navmenu">
+                    <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+                    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                        <ui:insert name="statusDialogContent">
+                            <h:graphicImage url="/resources/images/ajaxloadingbar.gif"/>
+                        </ui:insert>
+                    </p:dialog>      
+
+                    <h:panelGrid columns="3" cellpadding="4" >
+                        <p:menuButton icon="fa fa-navicon" title="Navigation">
+                            <p:menuitem action="viewPhotos" value="View Plot Photos" rendered="#{userSession.viewRole}" onclick="PF('statusDialog').show()" />
+                            <p:menuitem outcome="uploadPhotos" value="Upload Plot Photos" rendered="#{userSession.uploadRole}" onclick="PF('statusDialog').show()" />
+                            <p:menuitem outcome="approve" value="Approve Plot Photos" rendered="#{userSession.approveRole}" onclick="PF('statusDialog').show()" />
+                        </p:menuButton>
+                        <p:spacer width="4" />
+                        <p:commandLink id="profLink" value="Welcome #{userSession.fullName}" style="color: black; font-weight: bold"/>
+                        <p:overlayPanel id="profPanel" for="profLink" hideEffect="fade">
+                            <p:panelGrid columns="2" styleClass="ui-noborder">
+                                <p:outputLabel value="EAuth ID:" />
+                                <p:outputLabel value="#{userSession.eauthId}" />
+                                <p:outputLabel value="Name:" />
+                                <p:outputLabel value="#{userSession.fullName}" />
+                                <p:outputLabel value="Email:" />
+                                <p:outputLabel value="#{userSession.email}" />
+                            </p:panelGrid>
+                        </p:overlayPanel>
+                    </h:panelGrid>                        
+                </h:form>   
+                <!-- <h:panelGroup id="pgcont" rendered="#{userSession.renderContent('xxx')}"> -->
+                <ui:insert name="pageContent">
+                    [pageContent missing]
+                </ui:insert>
+
+            </b:container>
+        </h:body>
+    </f:view>         
+</html>

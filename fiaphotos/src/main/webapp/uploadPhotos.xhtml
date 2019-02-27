@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>FIA Document Management System</title>
+        <style>
+        </style>    
+        <script type="text/javascript">
+            function showStatus() {
+                PF('statusDialog').show();
+            }
+
+            function hideStatus() {
+                PF('statusDialog').hide();
+            }
+        </script>        
+
+    </h:head>
+    <h:body>
+        <h:outputStylesheet library="css" name="fiastyles.css"/>
+        <b:container fluid="true"> 
+            <ui:composition template="/facelets/template.xhtml">
+                <ui:define name="pageTitle">FIA Plot Photos - Upload Photos</ui:define>
+                <ui:define name="pageContent">
+                    <h:panelGroup id="pgerr" rendered="#{! userSession.uploadable}">
+                        <p:spacer height="100" />
+                        <p:outputLabel value="Unauthorized: You do not have the proper role to view this page" style="color: red; font-weight: bold; font-size: 2.0em" />
+                    </h:panelGroup>
+                    <h:panelGroup id="pgcont" rendered="#{userSession.uploadable}">
+                        <h:form id="uf" enctype="multipart/form-data">
+                            <p:panel header="FIA Plot Photos - Upload Photos" id="ptb">
+                                <p:fileUpload id="fu"
+                                              value="#{uplBean.uploadedFile}" 
+                                              fileUploadListener="#{uplBean.handleFileUpload}" 
+                                              mode="advanced" 
+                                              dragDropSupport="true"
+                                              multiple="true" 
+                                              update="@this uf:itms uf:btns" 
+                                              sizeLimit="10000000000" 
+                                              fileLimit="#{uplBean.maxFiles}" 
+                                              disabled="#{uplBean.maxFiles eq 0}" 
+                                              allowTypes="/(\.|\/)(gif|jpe?g|png|bmp)$/" 
+                                              sequential="true" 
+                                              label="Select Files" 
+                                              uploadLabel="Upload Files"
+                                              cancelLabel="Clear Selection"
+                                              auto="true"/>
+                            </p:panel>
+                            <p:messages id="msgs" showDetail="true" closable="true">
+                                <p:autoUpdate />
+                            </p:messages>                
+                            <p:dataGrid  id="itms" emptyMessage=" " var="ud" value="#{uplBean.uploadedData}" columns="3" layout="grid" lazy="false" styleClass="ui-datagrid-no-border">
+                                <p:panelGrid id="pitm" columns="1" layout="grid" style="text-align: center;">
+                                    <p:panelGrid columns="2" layout="grid" style="text-align: center;" styleClass="ui-noborder">
+                                        <p:commandButton actionListener="#{uplBean.editItem}" action="editUpload" update="uf:itms uf:fu" icon="fa fa-edit" title="Edit" style="font-size: 125%">
+                                            <f:param name="uuid" value="#{ud.uuid}"/>
+                                            <f:setPropertyActionListener target="#{userSession.editSource}" value="upload" />
+                                        </p:commandButton>
+                                        <!--
+                                        <p:commandButton actionListener="#{uplBean.editItem}" update="uf:itms uf:fu" icon="fa fa-edit" title="Edit" style="font-size: 125%">
+                                            <f:param name="uuid" value="#{ud.uuid}"/>
+                                            <p:ajax event="dialogReturn" update="uf:itms"/>
+                                        </p:commandButton>
+                                        -->
+                                        <p:commandButton actionListener="#{uplBean.removeItem}" update="uf:itms uf:fu uf:btns" icon="fa fa-remove" title="Remove" style="font-size: 125%">
+                                            <f:param name="uuid" value="#{ud.uuid}"/>
+                                        </p:commandButton>
+                                    </p:panelGrid>
+                                    <p:graphicImage stream="true"  value="#{imgService.uploadedImage}" style="width:60%" alt="image">
+                                        <f:param name="uuid" value="#{ud.uuid}"/>
+                                        <f:param name="beanName" value="#{uplBean.beanName}"/>
+                                    </p:graphicImage>
+                                    <p:outputLabel value="#{ud.fileName}"/>
+                                    <p:outputLabel value="#{ud.errorMsg}" style="color: red;font-weight: bold"/>
+                                    <p:panelGrid id="pdtl" columns="5" layout="grid" styleClass="ui-noborder">
+                                        <p:outputLabel value="State: #{ud.stateName}"/>
+                                        <p:outputLabel value="County: #{ud.countyName}"/>
+                                        <p:outputLabel value="Plot: #{ud.plotCode}"/>
+                                        <p:outputLabel value="Year: #{ud.year}"/>
+                                        <p:outputLabel value="Dir: #{ud.direction}"/>
+                                    </p:panelGrid>
+                                </p:panelGrid>
+                            </p:dataGrid>    
+                            <p:panelGrid id="btns" columns="2" styleClass="ui-noborder">
+                                <p:commandButton actionListener="#{uplBean.cancelUpload}" action="viewPhotos" value="Cancel" icon="ui-icon-cancel"/>
+                                <p:commandButton actionListener="#{uplBean.saveUpload}" disabled="#{uplBean.disableSave}" value="Save" update="uf" icon="ui-icon-disk"/>
+                                <!-- <p:commandButton actionListener="#{uplBean.bulkUpload}" value="Bulk" update="uf" icon="ui-icon-disk"/> -->
+                            </p:panelGrid>
+                        </h:form>   
+                    </h:panelGroup>
+                </ui:define>
+            </ui:composition>
+        </b:container>
+    </h:body>
+</html>
+

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.jsf</url-pattern>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+    
+    <context-param>
+        <param-name>primefaces.CLIENT_SIDE_VALIDATION</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>facelets.SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>net.bootsfaces.blockUI</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <!--
+    <listener>
+            <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    -->
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>fiafs</param-value>
+    </context-param>
+    <context-param>
+        <param-name>BootsFaces_USETHEME</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>BootsFaces_THEME</param-name>
+        <param-value>default</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+    
+    <!-- -->
+    <filter>
+        <filter-name>FS Apps Filter</filter-name>
+        <filter-class>gov.usda.fs.fia.fiaphotos.filter.FSAppsFilter</filter-class>
+        <init-param>
+            <description>Url to the FSApps eAuth Gateway</description>
+            <param-name>FS_APPS_URL</param-name>
+            <param-value>https://fsapps.fs.usda.gov/fsapps/gateway.jsp?relayState=</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>FS Apps Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- -->
+    <servlet>
+        <servlet-name>FSAppsServlet</servlet-name>
+        <servlet-class>gov.usda.fs.fia.fiaphotos.servlet.FSAppsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FSAppsServlet</servlet-name>
+        <url-pattern>/auth/login</url-pattern>
+    </servlet-mapping>
+    
+    <!--
+    <filter>
+        <filter-name>Authorization</filter-name>
+        <filter-class>gov.usda.fs.fia.fiaphotos.filter.AuthFilter</filter-class>
+        <init-param>
+            <param-name>authorization_sso_endpoint</param-name>
+            <param-value>http://fsxopsx1070.wrk.fs.usda.gov:8080/r6portal/sso/validate</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authorization_endpoint</param-name>
+            <param-value>http://fsxopsx1070.wrk.fs.usda.gov:8080/r6portal/auth/authorize</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authorization_token_endpoint</param-name>
+            <param-value>http://fsxopsx1070.wrk.fs.usda.gov:8080/r6portal/auth/token</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authorization_logout_endpoint</param-name>
+            <param-value>http://fsxopsx1070.wrk.fs.usda.gov:8080/r6portal/saml/logout</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authorization_client_id</param-name>
+            <param-value>gov.usda.fs.fia.app1</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authorization_client_secret</param-name>
+            <param-value>app1</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authorization_scope</param-name>
+            <param-value>openid</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>Authorization</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    -->
+    <welcome-file-list>
+        <welcome-file>landing.xhtml</welcome-file>
+    </welcome-file-list>
+    <error-page>
+        <location>/error.xhtml</location>
+    </error-page>
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/error.xhtml</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error.xhtml</location>
+    </error-page>
+</web-app>

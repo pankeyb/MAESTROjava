@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+    </h:head>
+    <h:body>
+        <b:container fluid="true">
+            <ui:composition template="/facelets/template.xhtml">
+                <ui:define name="pageTitle">Simulate User</ui:define>
+                <ui:define name="pageContent">
+                    <h:form id="f1">
+                        <p:separator id="xsep" style="height:5px"/>
+                        <p:spacer height="100"/>
+                        <p:panelGrid columns="2" styleClass="ui-noborder">
+                            <p:outputLabel value="Email: " for="em"/>
+                            <p:inputText id="em" value="#{userSession.simEmail}" size="30" />
+                            <p:commandButton value="Simulate" actionListener="#{userSession.simulate}" action="welcome"/>
+                            <p:commandButton value="Clear" actionListener="#{userSession.clearSimulate}" action="welcome"/>
+                            <p:outputLabel value="View Role:" />
+                            <p:selectBooleanCheckbox value="#{userSession.simViewRole}"/>
+                            <p:outputLabel value="Upload Role:" />
+                            <p:selectBooleanCheckbox value="#{userSession.simUploadRole}"/>
+                            <p:outputLabel value="Approve Role:" />
+                            <p:selectBooleanCheckbox value="#{userSession.simApproveRole}"/>
+                        </p:panelGrid>
+                    </h:form>
+                </ui:define>
+            </ui:composition>
+        </b:container> 
+    </h:body>
+</html>

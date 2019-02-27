@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+    </h:head>
+    <h:body>
+        <b:container fluid="true"> 
+            <ui:composition template="/facelets/template.xhtml">
+                <ui:define name="pageTitle">View Plot Photos</ui:define>
+                <ui:define name="pageContent">
+                    <h:panelGroup id="pgerr" rendered="#{! userSession.viewable}">
+                        <p:spacer height="100" />
+                        <p:outputLabel value="Unauthorized: You do not have the proper role to view this page" style="color: red; font-weight: bold; font-size: 2.0em" />
+                    </h:panelGroup>
+                    <h:panelGroup id="pgcont" rendered="#{userSession.viewable}">
+                        <h:form id="f1">
+                            <p:sidebar widgetVar="sidebar1" style="width: 33%;">
+                                <p:panelGrid columns="2" styleClass="ui-noborder">
+                                    <f:facet name="header">Filter</f:facet>
+                                    <h:outputLabel for="sts" value="State:" />
+                                    <p:selectOneMenu id="sts" value="#{listPhotos.filterState}" label="States"
+                                                     filter="true" filterMatchMode="startsWith">
+                                        <f:selectItems value="#{listPhotos.states}"/>
+                                        <p:ajax event="change" update="f1:cts f1:pts f1:yts"/>
+                                    </p:selectOneMenu>                    
+                                    <h:outputLabel for="cts" value="County:" />
+                                    <p:selectOneMenu id="cts" value="#{listPhotos.filterCounty}" label="Counties"
+                                                     filter="true" filterMatchMode="startsWith">
+                                        <f:selectItems value="#{listPhotos.counties}"/>
+                                        <p:ajax event="change" update="f1:pts f1:yts"/>
+                                    </p:selectOneMenu>
+                                    <h:outputLabel for="pts" value="Plot:" />
+                                    <p:selectOneRadio value="#{listPhotos.filterPlotType}">
+                                        <f:selectItem itemValue="PLOT" itemLabel="Plot Number"/>
+                                        <f:selectItem itemValue="PLOTFIADB" itemLabel="Plot FIA DB"/>
+                                        <p:ajax event="change" update="f1:pts"/>
+                                    </p:selectOneRadio>
+                                    <h:outputLabel value=""/>
+                                    <p:selectOneMenu id="pts" value="#{listPhotos.filterPlot}" label="Plot"
+                                                     filter="true" filterMatchMode="startsWith">
+                                        <f:selectItems value="#{listPhotos.plots}"/>
+                                        <p:ajax event="change" update="f1:yts"/>
+                                    </p:selectOneMenu>                    
+                                    <h:outputLabel for="yts" value="Year:" />
+                                    <p:selectOneRadio value="#{listPhotos.filterYearType}">
+                                        <f:selectItem itemValue="MEASURE" itemLabel="Measure"/>
+                                        <f:selectItem itemValue="INVENTORY" itemLabel="Inventory"/>
+                                        <f:selectItem itemValue="FLDSEASON" itemLabel="Field Season"/>
+                                        <p:ajax event="change" update="f1:yts"/>
+                                    </p:selectOneRadio>
+                                    <h:outputLabel value=""/>
+                                    <p:selectOneMenu id="yts" value="#{listPhotos.filterYear}" label="Counties"
+                                                     filter="true" filterMatchMode="startsWith">
+                                        <f:selectItems value="#{listPhotos.years}"/>
+                                    </p:selectOneMenu>                    
+                                    <p:commandButton value="Cancel" oncomplete="PF('sidebar1').hide()"/>
+                                    <p:commandButton value="Apply" 
+                                                     actionListener="#{listPhotos.applyFilter}" 
+                                                     update="f1 f1:tb f1:photoGrid"
+                                                     oncomplete="PF('sidebar1').hide()"/>
+                                </p:panelGrid>
+                            </p:sidebar>
+                            <!--
+                            <p:sidebar widgetVar="sidebar2" fullScreen="true">
+                                <h:form id="uform" enctype="multipart/form-data">
+                                <p:fileUpload value="#{uplBean.uploadedFile}" 
+                                              fileUploadListener="#{uplBean.handleFileUpload}" 
+                                              mode="advanced" 
+                                              dragDropSupport="false"
+                                              multiple="true" 
+                                              update="@this" 
+                                              sizeLimit="10000000000" 
+                                              fileLimit="#{uplBean.maxFiles}" 
+                                              allowTypes="/(\.|\/)(gif|jpe?g|png|bmp)$/" 
+                                              sequential="true" />
+                                </h:form>
+                            </p:sidebar>
+                            -->
+                            <p:spacer id="top" width="1" height="1"/>
+                            <p:panel header="View Plot Photos" id="ptb">
+                                <p:toolbar id="tb">
+                                    <f:facet name="left">
+                                        <p:menuButton value="Filter">
+                                            <p:menuitem value="Filter" icon="fa fa-search" oncomplete="PF('sidebar1').show()"/>
+                                            <p:menuitem value="Clear" icon="fa fa-remove" actionListener="#{listPhotos.clearFilter}" update="f1 f1:photoGrid"/>
+                                        </p:menuButton>
+                                        <!-- <p:commandButton value="Filter" icon="fa fa-arrow-right" oncomplete="PF('sidebar1').show()"/>-->
+                                        <p:menuButton value="Photos" id="pdps">
+                                            <p:menuitem id="sap" value="Select All"  update="f1:pdps f1:photoGrid" ajax="true" actionListener="#{listPhotos.doSelectAll}"/>
+                                            <p:menuitem id="uap" value="Unselect All" update="f1:pdps f1:photoGrid" ajax="true" actionListener="#{listPhotos.doSelectAll}"/>
+                                            <p:menuitem id="ul" value="Upload" outcome="uploadPhotos" rendered="#{userSession.uploadable}"/>
+                                            <p:menuitem id="dl" value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)" disabled="#{! listPhotos.showDownload}">
+                                                <p:fileDownload value="#{listPhotos.download}" />
+                                            </p:menuitem>
+                                        </p:menuButton>  
+                                        <p:commandButton value="Plot Sheet" id="psbtn" />
+                                        <p:overlayPanel id="psdlgid" for="psbtn" dismissable="false" modal="true" widgetVar="psdlg">
+                                            <p:panelGrid columns="1" styleClass="ui-noborder">
+                                                <p:selectBooleanCheckbox itemLabel="Include Additional Photos?"  value="#{listPhotos.incOthers}" />
+                                                <p:selectBooleanCheckbox itemLabel="Landscape?"  value="#{listPhotos.landscape}" />
+                                                <p:panelGrid columns="2" styleClass="ui-noborder">
+                                                    <p:commandButton value="OK" id="psok" ajax="false" onclick="PF('psdlg').hide();PrimeFaces.monitorDownload(showStatus, hideStatus)">
+                                                        <p:fileDownload value="#{listPhotos.plotSheet}" />
+                                                    </p:commandButton>
+                                                    <p:commandButton value="Cancel" id="pscxl" onclick="PF('psdlg').hide();"/>
+                                                </p:panelGrid>
+                                            </p:panelGrid>
+                                        </p:overlayPanel>
+                                    </f:facet>
+                                    <f:facet name="right">
+                                        <p:outputLabel value="#{listPhotos.rowCount} Photos"/>
+                                        <p:spacer width="10"/>
+                                        <p:commandButton ajax="true" title="First Page" icon="ui-icon-seek-first" actionListener="#{listPhotos.pageFirst}"  disabled="#{! listPhotos.showPageFirst}" update="f1 f1:photoGrid" id="pf"/>
+                                        <p:commandButton ajax="true" title="Previous Page" icon="ui-icon-seek-prev" actionListener="#{listPhotos.pagePrevious}" disabled="#{! listPhotos.showPagePrevious}" update="f1 f1:photoGrid" id="pp"/>
+                                        <p:spacer width="10" height="1"/>
+                                        <p:outputLabel value=" #{listPhotos.pageText} " />
+                                        <p:spacer width="10" height="1"/>
+                                        <p:commandButton ajax="true" title="Next Page" icon="ui-icon-seek-next" actionListener="#{listPhotos.pageNext}"    disabled="#{! listPhotos.showPageNext}" update="f1 f1:photoGrid" id="pn"/>
+                                        <p:commandButton ajax="true" title="Last Page" icon="ui-icon-seek-end"  actionListener="#{listPhotos.pageLast}"    disabled="#{! listPhotos.showPageLast}" update="f1 f1:photoGrid" id="pl"/>
+                                        <p:spacer width="10" height="1"/>
+                                        <p:outputLabel for="gc" value="Photo Size:" />
+                                        <p:spacer width="5" height="1"/>
+                                        <p:selectOneMenu value="#{listPhotos.gridCols}" 
+                                                         id="gc" 
+                                                         label="Photo Size">
+                                            <f:selectItem itemLabel="Small" itemValue="4" />
+                                            <f:selectItem itemLabel="Medium" itemValue="3" />
+                                            <f:selectItem itemLabel="Large" itemValue="2" />
+                                            <p:ajax event="change" update="f1:photoGrid"/>
+                                        </p:selectOneMenu>                        
+                                        <p:spacer width="10" height="1"/>
+                                        <p:outputLabel for="ps" value="Photos Per Page:"/>
+                                        <p:spacer width="5" height="1"/>
+                                        <p:selectOneMenu value="#{listPhotos.pageSize}" 
+                                                         id="ps" 
+                                                         label="Page Size">
+                                            <f:selectItem itemLabel="10" itemValue="10" />
+                                            <f:selectItem itemLabel="20" itemValue="20" />
+                                            <f:selectItem itemLabel="50" itemValue="50" />
+                                            <p:ajax event="change" listener="#{listPhotos.resetPageSize}" update="f1:tb f1:pdps f1:photoGrid"/>
+                                        </p:selectOneMenu>                        
+                                    </f:facet>
+                                </p:toolbar>     
+                            </p:panel>
+                            <p:messages id="msgs" showDetail="true" closable="true">
+                                <p:autoUpdate />
+                            </p:messages>                
+
+                            <p:sticky target="ptb"/>
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            </p:confirmDialog>                
+                            <p:dataGrid id="photoGrid" var="photo" value="#{listPhotos.photos}" columns="#{listPhotos.gridCols}" layout="grid" lazy="false" styleClass="ui-datagrid-no-border">
+                                <p:panel header="#{photo.lobDocument.title}">
+                                    <h:panelGrid columns="2" styleClass="ui-noborder" columnClasses="alignLeft, alignRight" style="width: 100%">
+                                        <p:panelGrid >
+                                            <p:outputLabel for="sbc" value="Selected: "/>
+                                            <p:spacer width="5"/>
+                                            <p:selectBooleanCheckbox value="#{photo.selected}" id="sbc" title="title" label="label">
+                                                <p:ajax  event="change" update="f1:pdps sbc"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:panelGrid>
+                                        <p:panelGrid id="xyz" rendered="#{userSession.approvable}">
+                                            <p:commandButton actionListener="#{editPhoto.editItem}" action="editPhoto" icon="fa fa-edit" title="Edit">
+                                                <f:param name="uuid" value="#{photo.cn}"/>
+                                                <f:param name="returnAction" value="backToView" />
+                                                <f:param name="callingBeanName" value="listPhotos" />
+                                                <f:setPropertyActionListener target="#{userSession.editSource}" value="view" />
+                                            </p:commandButton>
+                                            <p:commandButton actionListener="#{editPhoto.removePhoto}" update="photoGrid" icon="fa fa-remove" title="Remove" >
+                                                <f:param name="uuid" value="#{photo.cn}"/>
+                                                <f:param name="callingBeanName" value="listPhotos" />
+                                                <p:confirm header="Remove Photo" message="Are you sure you want to remove this photo?" icon="ui-icon-alert" />
+                                            </p:commandButton>
+                                        </p:panelGrid>
+                                    </h:panelGrid>
+                                    <b:panelGrid columns="1" style="text-align:center">
+                                        <p:graphicImage value="#{imgService.image}" style="width:100%" alt="#{photo.lobDocument.title}">
+                                            <f:param name="Cn" value="#{photo.cn}"/>
+                                        </p:graphicImage>
+                                        <b:panelGrid columns="1">
+                                            <p:outputLabel value="#{photo.lobDocument.fileName}" />
+                                        </b:panelGrid>
+                                        <b:panelGrid columns="3">
+                                            <p:outputLabel value="State: #{lookupBean.stateNameMap[photo.nimsPlotTbl.nimsCounty.stateCd]}" />
+                                            <p:outputLabel value="County: #{photo.nimsPlotTbl.nimsCounty.countyNm}" />
+                                            <p:outputLabel value="Plot: #{photo.nimsPlotTbl.plot}" />
+                                            <p:outputLabel value="Measure Year: #{photo.nimsPlotTbl.measYr}" />
+                                            <p:outputLabel value="Inventory Year: #{photo.nimsPlotTbl.invYr}" />
+                                            <p:outputLabel value="Fld Season Year: #{photo.nimsPlotTbl.fldSeasYr}" />
+                                        </b:panelGrid>
+                                    </b:panelGrid>
+                                </p:panel>
+                            </p:dataGrid>   
+                        </h:form>
+                    </h:panelGroup>
+                </ui:define>                    
+            </ui:composition>                
+        </b:container>
+    </h:body>
+</html>

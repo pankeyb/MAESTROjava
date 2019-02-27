@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+    </h:head>
+    <h:body>
+        <b:container fluid="true">
+            <ui:composition template="/facelets/template.xhtml">
+                <ui:define name="pageContent">
+                    <h:panelGroup id="pgerr" rendered="#{! userSession.viewable}">
+                        <p:spacer height="100" />
+                        <p:outputLabel value="Unauthorized: You do not have the proper role to view this page" style="color: red; font-weight: bold; font-size: 2.0em" />
+                    </h:panelGroup>
+                    <h:panelGroup id="pgcont" rendered="#{userSession.viewable}">
+                        <h:form id="f1">
+                            <p:separator id="xsep" style="height:5px"/>
+                            <p:spacer height="100"/>
+                            <p:panelGrid columns="3" layout="grid" styleClass="ui-noborder">
+                                <p:panel style="text-align: center" rendered="#{userSession.viewRole}">
+                                    <a href="viewPhotos" onclick="PF('statusDialog').show()">
+                                        <p:graphicImage value="resources/images/alpine.jpg" width="100%" height="100%"/>
+                                    </a>    
+                                    <a href="viewPhotos" onclick="PF('statusDialog').show()">View Plot Photos</a>
+                                </p:panel>
+                                <p:panel style="text-align: center" rendered="#{userSession.uploadRole}">
+                                    <h:commandLink action="uploadPhotos">
+                                        <img width="100%" height="100%" src="resources/images/leaf.jpg"/>
+                                    </h:commandLink>
+                                    <h:commandLink action="uploadPhotos" value="Upload Plot Photos" />
+                                </p:panel>
+                                <p:panel style="text-align: center" rendered="#{userSession.approveRole}">
+                                    <a href="approve" onclick="PF('statusDialog').show()">
+                                        <img width="100%" height="100%" src="resources/images/lake.jpg"/>    
+                                    </a>
+                                    <a href="approve" onclick="PF('statusDialog').show()">Approve Plot Photos</a>
+                                </p:panel>
+                            </p:panelGrid>
+                        </h:form>
+                    </h:panelGroup>
+                </ui:define>
+            </ui:composition>
+        </b:container> 
+    </h:body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <f:view>
+        <h:head>
+            <meta charset="utf-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title><ui:insert name="title">Default title</ui:insert></title>
+        </h:head>
+        <h:body>
+            <h:form>
+
+                <div class="ui-g">
+                    <div class="ui-g-12 ui-md-10 ui-g-nopad">
+                        <div class="ui-g">
+                            <div class="ui-g-12 ui-md-6 ui-lg-3">
+                                <p:commandButton value="Select All" id="selBtn" actionListener="#{listPhotos.doSelectAll}"/>
+                            </div>
+                            <div class="ui-g-12 ui-md-6 ui-lg-3">
+                                <p:selectOneMenu id="psize" label="Page Size" title="Page Size">
+                                    <f:selectItem itemLabel="10" itemValue="10" />
+                                    <f:selectItem itemLabel="20" itemValue="20" />
+                                    <f:selectItem itemLabel="50" itemValue="50" />
+                                </p:selectOneMenu>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="ui-fluid">
+                        <p:dataGrid id="photoGrid" var="photo" value="#{listPhotos.photos}" rows="10" columns="2" layout="grid" lazy="false">
+                            <p:panel header="#{photo.Cn} - #{photo.title}" style="text-align:center">
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Selected: " />
+                                    <p:selectBooleanCheckbox value="#{photo.selected}" id="sbc">
+                                        <p:ajax event="change" update="sbc"/>
+                                    </p:selectBooleanCheckbox>
+                                </h:panelGrid>
+                                <h:panelGrid columns="1" style="width:100%">
+                                    <p:graphicImage value="#{imgService.image}" width="400" height="300" alt="#{photo.remarks}">
+                                        <f:param name="Cn" value="#{photo.Cn}"/>
+                                    </p:graphicImage>
+
+                                    <h:outputText value="#{photo.photographer}" />
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:dataGrid>   
+                    </div>
+                </div>
+            </h:form>
+        </h:body>
+    </f:view>
+</html>

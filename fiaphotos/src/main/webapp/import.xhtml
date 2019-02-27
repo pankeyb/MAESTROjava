@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>FIA Document Management System - Import</title>
+        <style>
+            .ui-widget, .ui-widget .ui-widget {
+                font-size: 90% !important;
+            }
+            .ui-datagrid-no-border, .ui-datagrid-content {
+                border: none;
+            }		
+        </style>        
+        <script type="text/javascript">
+            function showStatus() {
+                PF('statusDialog').show();
+            }
+
+            function hideStatus() {
+                PF('statusDialog').hide();
+            }
+        </script>        
+
+    </h:head>
+    <h:body>
+        <b:container>
+            <h:form id="f1">
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+                <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+                <p:dialog id="ajid" widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                    <h:graphicImage url="/resources/images/ajaxloadingbar.gif"/>
+                </p:dialog> 
+                <p:tabMenu id="tabs" activeIndex="#{param.selectedRoot}" model="#{impBean.rootMenu}"/>
+                <p:breadCrumb model="#{impBean.breadCrumbs}" homeDisplay="text"/>
+                <p:toolbar id="tb">
+                    <f:facet name="left">
+                        <p:outputLabel value="RS Code" for="rscd"/>
+                        <p:inputText value="#{impBean.rscd}" id="rscd" size="2" maxlength="2" />
+                        <p:outputLabel value="State" for="stcd"/>
+                        <p:inputText value="#{impBean.statecd}" id="stcd" size="2" maxlength="2"/>
+                        <p:outputLabel value="County" for="cocd"/>
+                        <p:inputText value="#{impBean.countycd}" id="cocd" size="4" maxlength="4"/>
+                        <p:outputLabel value="Year" for="yr"/>
+                        <p:inputText value="#{impBean.year}" id="yr" size="4" maxlength="4"/>
+                    </f:facet>
+                    <f:facet name="right">
+                        <p:commandButton async="false" 
+                                         update="ajid" 
+                                         value="Import" 
+                                         actionListener="#{impBean.doImport}" 
+                                         onclick="rc();"
+                                         ajax="true"/>
+                    </f:facet>
+                </p:toolbar>
+                <h:outputLabel id="cp" value="#{impBean.statusMsg}"/>
+                <p:poll global="false" id="poll" async="true" interval="5" update="cp poll"/>
+                <p:remoteCommand name="rc" update="cp"/>
+                
+                <!--
+                <p:dataScroller id="grid" value="#{impBean.files}" var="myFile" chunkSize="100" lazy="true">
+                    <p:panelGrid columns="3" layout="grid"> 
+                        <p:commandLink rendered="#{myFile.type eq 'Parent'}" value="#{myFile.name}" actionListener="#{impBean.selectPath}" disabled="#{myFile.theFile.file}" update="f1">
+                            <f:param name="selectedPath" value="#{myFile.pathEnc}"/>
+                            <p:ajax  event="click" update="f1:grid"/>
+                        </p:commandLink> 
+                        <p:spacer rendered="#{myFile.type ne 'Parent'}" width="1" height="1"/>
+                        <p:commandLink rendered="#{myFile.type ne 'Parent'}" value="#{myFile.name}" actionListener="#{impBean.selectPath}" disabled="#{myFile.theFile.file}" update="f1">
+                            <f:param name="selectedPath" value="#{myFile.pathEnc}"/>
+                            <p:ajax  event="click" update="f1:grid"/>
+                        </p:commandLink>    
+                        <p:spacer rendered="#{myFile.type eq 'Parent'}" width="1" height="1"/>
+                        <p:outputLabel value="#{myFile.type}"/>
+                    </p:panelGrid>
+                </p:dataScroller>
+                -->
+                <p:dataGrid id="grid" var="myFile" value="#{impBean.files}" columns="1" rows="1000000" layout="grid" lazy="true" styleClass="ui-datagrid-no-border">
+                    <p:panelGrid columns="3" layout="grid"> 
+                        <p:commandLink rendered="#{myFile.type eq 'Parent'}" value="#{myFile.name}" actionListener="#{impBean.selectPath}" disabled="#{myFile.theFile.file}" update="f1">
+                            <f:param name="selectedPath" value="#{myFile.pathEnc}"/>
+                            <p:ajax  event="click" update="f1:grid"/>
+                        </p:commandLink> 
+                        <p:spacer rendered="#{myFile.type ne 'Parent'}" width="1" height="1"/>
+                        <p:commandLink rendered="#{myFile.type ne 'Parent'}" value="#{myFile.name}" actionListener="#{impBean.selectPath}" disabled="#{myFile.theFile.file}" update="f1">
+                            <f:param name="selectedPath" value="#{myFile.pathEnc}"/>
+                            <p:ajax  event="click" update="f1:grid"/>
+                        </p:commandLink>    
+                        <p:spacer rendered="#{myFile.type eq 'Parent'}" width="1" height="1"/>
+                        <p:outputLabel value="#{myFile.type}"/>
+                    </p:panelGrid>
+                </p:dataGrid>
+
+            </h:form>
+        </b:container>
+    </h:body>
+</html>

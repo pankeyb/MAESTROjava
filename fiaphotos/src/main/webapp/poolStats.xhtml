@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+    </h:head>
+    <h:body>
+        <b:container fluid="true">
+            <ui:composition template="/facelets/template.xhtml">
+                <ui:define name="pageContent">
+                    <h:form id="f1">
+                        <p:separator id="xsep" style="height:5px"/>
+                        <p:spacer height="10"/>
+                        <p:button value="Refresh" >
+                            <p:ajax event="click" update="f1:list"/>
+                        </p:button>
+                        
+                        <p:dataList id="list" value="#{poolStats.stats}" var="stat" type="ordered">
+                            <f:facet name="header">
+                                Pool Stats
+                            </f:facet>
+                            #{stat.name} = #{stat.value}
+                        </p:dataList>
+                    </h:form>
+                </ui:define>
+            </ui:composition>
+        </b:container> 
+    </h:body>
+</html>
